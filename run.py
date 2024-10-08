@@ -1,7 +1,7 @@
 import subprocess
 import sys
-from parser1 import parser1  # Импортируйте вашу функцию
-
+from parser1 import parser1 
+from parser2 import parser2
 # Список необходимых библиотек
 required_packages = [
     'selenium',
@@ -28,4 +28,6 @@ param2 = sys.argv[2]  # date_from
 param3 = sys.argv[3]  # date_up
 
 # Вызов функции parser1 с параметрами
-parser1(param1, param2, param3)
+# parser1(param1, param2, param3)
+parser1(param1,param2,param3)
+parser2(param1,param2,param3)

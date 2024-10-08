@@ -151,6 +151,8 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str):
     make_word_file(parse_KJRF(string_to_put_in_search,date_from,date_up))
 
 
+
+
 if __name__ == "__main__":
     import sys
 
