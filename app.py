@@ -93,14 +93,14 @@ class Ui_MainWindow(object):
         ]
 
         # Функция для установки пакетов
-        def install(package):
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+        # def install(package):
+        #     subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
 
-        # Установка всех необходимых пакетов
-        for package in required_packages:
-            install(package)
+        # # Установка всех необходимых пакетов
+        # for package in required_packages:
+        #     install(package)
 
-        print("Все библиотеки установлены. Теперь запускаем основной код...")
+        # print("Все библиотеки установлены. Теперь запускаем основной код...")
 
         if selected_option == 'Все сайты':
             if check_box_state:
