@@ -11,7 +11,7 @@ from docx.shared import Inches
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-def parser1(string_to_put_in_search:str,date_from:str,date_up:str):
+def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
     def add_hyperlink(paragraph, text, url):
         rel_id = paragraph.part.relate_to(url, 'hyperlink', is_external=True)
         hyperlink = OxmlElement('w:hyperlink', {qn('r:id'): rel_id})
@@ -113,13 +113,13 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str):
 
 
 
-    def make_word_file(table_data:list):
+    def make_word_file_to_all_parsers(table_data:list, date_from, date_up):
         if table_data:
             
             doc = Document()
-            doc.add_heading('Судебная практика КС РФ', 0)
-            doc.add_paragraph("Сайт КС РФ – поиск постановлений по делам о проверке конституционности положений Трудового кодекса РФ.")
-            doc.add_paragraph("Период поиска: от 01.09.2024 до 30.09.2024.")
+            doc.add_heading('Судебная практика', 0)
+            # doc.add_paragraph("Сайт КС РФ – поиск постановлений по делам о проверке конституционности положений Трудового кодекса РФ.")
+            # doc.add_paragraph("Период поиска: от 01.09.2024 до 30.09.2024.")
             bold_paragraph = doc.add_paragraph()
             bold_run = bold_paragraph.add_run('1. Конституционный Суд РФ:')
             bold_run.bold = True
@@ -142,29 +142,68 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str):
 
                 
                 paragraph.add_run(f" {case_title}")
-            doc.save('Судебная_практика.docx')
+            doc.save(f'Судебная_практика {date_from}-{date_up}.docx')
+            print("Документ успешно создан!")
+        else:
+            print("Не было найдено никаких решений.")
+
+    def make_word_file(table_data:list, date_from, date_up):
+        if table_data:
+            
+            doc = Document()
+            doc.add_heading('Судебная практика', 0)
+            # doc.add_paragraph("Сайт КС РФ – поиск постановлений по делам о проверке конституционности положений Трудового кодекса РФ.")
+            # doc.add_paragraph("Период поиска: от 01.09.2024 до 30.09.2024.")
+            bold_paragraph = doc.add_paragraph()
+            bold_run = bold_paragraph.add_run('Конституционный Суд РФ:')
+            bold_run.bold = True
+
+            
+            for i, case in enumerate(table_data, 1):
+                case_date = case[0][0]  
+                case_title = case[1][0]  
+                case_number = case[2][0]  
+                case_link = case[2][1]  
+
+                
+                paragraph = doc.add_paragraph(f'1.{i}. ')
+                link_text = f"Постановление от {case_date} № {case_number}"
+                formatted_case = f"{i}. {link_text}"
+
+                # Добавление гиперссылки
+                if case_link:  
+                    add_hyperlink(paragraph, link_text, case_link)
+
+                
+                paragraph.add_run(f" {case_title}")
+
+            
+            doc.save(f'Судебная_практика_КС_РФ {date_from}-{date_up}.docx')
             print("Документ успешно создан!")
         else:
             print("Не было найдено никаких решений.")
 
     
-    make_word_file(parse_KJRF(string_to_put_in_search,date_from,date_up))
+    if flag == 'add_to_file':
+        make_word_file_to_all_parsers(parse_KJRF(string_to_put_in_search,date_from,date_up), date_from, date_up)
+    elif flag =='make_new_file':
+        make_word_file(parse_KJRF(string_to_put_in_search,date_from,date_up), date_from, date_up)
 
 
 
 
-if __name__ == "__main__":
-    import sys
+# if __name__ == "__main__":
+#     import sys
 
-    # Проверяем количество аргументов
-    if len(sys.argv) != 4:
-        print("Использование: python parser1.py <string_to_put_in_search> <date_from> <date_up>")
-        sys.exit(1)
+#     # Проверяем количество аргументов
+#     if len(sys.argv) != 4:
+#         print("Использование: python parser1.py <string_to_put_in_search> <date_from> <date_up>")
+#         sys.exit(1)
 
-    # Получаем параметры из командной строки
-    search_string = sys.argv[1]
-    date_from = sys.argv[2]
-    date_up = sys.argv[3]
+#     # Получаем параметры из командной строки
+#     search_string = sys.argv[1]
+#     date_from = sys.argv[2]
+#     date_up = sys.argv[3]
 
-    # Вызываем функцию с полученными параметрами
-    parser1(search_string, date_from, date_up)
+#     # Вызываем функцию с полученными параметрами
+#     parser1(search_string, date_from, date_up)

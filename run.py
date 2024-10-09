@@ -29,5 +29,5 @@ param3 = sys.argv[3]  # date_up
 
 # Вызов функции parser1 с параметрами
 # parser1(param1, param2, param3)
-parser1(param1,param2,param3)
-parser2(param1,param2,param3)
+parser1(param1,param2,param3, 'add_to_file')
+parser2(param1,param2,param3, 'add_to_file')
