@@ -15,64 +15,63 @@ import traceback
 
 def parser2(string_to_put_in_search: str, date_from: str, date_up: str, flag: str):
     def add_hyperlink(paragraph, text, url):
-        # Получаем идентификатор ссылки (relationship id)
+        
         rel_id = paragraph.part.relate_to(url, 'hyperlink', is_external=True)
 
-        # Создаем элемент гиперссылки
+        
         hyperlink = OxmlElement('w:hyperlink', {qn('r:id'): rel_id})
 
-        # Создаем элемент 'run' и 'text'
+        
         run = OxmlElement('w:r')
         t = OxmlElement('w:t')
         t.text = text
         run.append(t)
 
-        # Создаем свойства для текста (например, подчеркивание и цвет)
+        
         run_properties = OxmlElement('w:rPr')
 
-        # Подчеркивание
+        
         underline = OxmlElement('w:u')
         underline.set(qn('w:val'), 'single')
         run_properties.append(underline)
 
-        # Цвет шрифта
+        
         color = OxmlElement('w:color')
         color.set(qn('w:val'), '0000FF')  # Синий цвет
         run_properties.append(color)
 
-        # Добавляем свойства к run
+        
         run.append(run_properties)
 
-        # Добавляем run в гиперссылку
+        
         hyperlink.append(run)
 
-        # Добавляем гиперссылку в параграф
+        
         paragraph._element.append(hyperlink)
 
     def parse_SC(search_string: str, date_from: str, date_up: str) -> list:
-        # Настройка Selenium
         firefox_options = webdriver.FirefoxOptions()
-        firefox_options.add_argument('--headless')  # Оставьте это для фона
+        firefox_options.add_argument('--headless')  
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(options=firefox_options)
 
         try:
-            # Открытие сайта
+            
             driver.get('https://vsrf.ru/lk/practice/acts')
 
-            # Ожидание полной загрузки страницы
+            
             WebDriverWait(driver, 20).until(
                 lambda driver: driver.execute_script('return document.readyState') == 'complete'
             )
 
-            # Ожидание загрузки поля поиска
+            
             tick_box = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="numberExact"]'))
             )
             if tick_box.is_selected():
                 tick_box.click()
 
-            # Ввод даты
+            
             from_date = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="actDateFrom"]'))
             )
@@ -82,13 +81,13 @@ def parser2(string_to_put_in_search: str, date_from: str, date_up: str, flag: st
             from_date.send_keys(date_from)
             to_date.send_keys(date_up)
 
-            # Ввод поискового запроса
+            
             search_box = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="keywords"]'))
             )
             search_box.send_keys(search_string)
 
-            # Нажатие на кнопку "Поиск"
+            
             search_button = WebDriverWait(driver, 20).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="filter-form"]/div[1]/div[1]/div[2]/div/div[1]/input'))
             )
@@ -96,19 +95,19 @@ def parser2(string_to_put_in_search: str, date_from: str, date_up: str, flag: st
 
             time.sleep(3)
 
-            # Ожидание загрузки основного контейнера
+            
             container = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, "/html/body/div/div[2]/div/div/div[2]/div"))
             )
 
-            # Извлечение всех элементов с классом 'vs-items-body'
+            
             item_bodies = container.find_elements(By.XPATH, "//*[contains(@class, 'vs-items-body')]")
 
             table_data = []
             if item_bodies:
                 for item_body in item_bodies:
                     try:
-                        # Извлечение даты
+                       
                         date_element = item_body.find_element(By.XPATH, ".//*[contains(@class, 'vs-font-20')]")
                         link_names = item_body.find_elements(By.XPATH, ".//*[contains(@class, 'vs-items-label')]")
                         links = item_body.find_elements(By.TAG_NAME, 'a')
