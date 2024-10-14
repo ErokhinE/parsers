@@ -37,13 +37,12 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
         paragraph._element.append(hyperlink)
 
     def parse_KJRF(search_string:str,date_from:str,date_up:str)->list[list[tuple,tuple,tuple]]:
-        # Настройка Selenium
         firefox_options = webdriver.FirefoxOptions()
-        firefox_options.add_argument('--headless')  # Оставьте это для фона
+        firefox_options.add_argument('--headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(options=firefox_options)
 
-        # Открытие сайта и выполнение поиска
+        
         try:
             driver.get('https://www.ksrf.ru/ru/Decision/Pages/default.aspx')
 
@@ -51,13 +50,13 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
                 lambda driver: driver.execute_script('return document.readyState') == 'complete'
             )
 
-            # Ожидание загрузки поля поиска
+            
             search_box = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_m_g_8da72b0e_36c3_43d7_9458_469b90467bbc"]/div[1]/table/tbody/tr[1]/td/input[1]'))  # Change to more specific selector if needed
             )
             search_box.send_keys(search_string)
 
-            # Выбор даты
+            
             from_date = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_m_g_8da72b0e_36c3_43d7_9458_469b90467bbc_ctl04_Date"]'))
             )
@@ -67,7 +66,7 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
             from_date.send_keys(date_from)
             to_date.send_keys(date_up)
 
-            # Нажатие на кнопку "Поиск"
+            
             search_button = WebDriverWait(driver, 20).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_m_g_8da72b0e_36c3_43d7_9458_469b90467bbc"]/div[1]/table/tbody/tr[1]/td/input[2]'))  # Using clickable condition
             )
@@ -77,7 +76,7 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
                 EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_m_g_8da72b0e_36c3_43d7_9458_469b90467bbc_gView"]'))
             )
 
-            # Извлечение всех строк из таблицы
+            
             rows = table.find_elements(By.TAG_NAME, 'tr')
 
             
@@ -98,7 +97,7 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
                             row_data.append((cell.text, None))
                     table_data.append(row_data)
 
-            # Выводим данные
+            
             # for item in table_data:
             #     print(item)
 
@@ -118,8 +117,6 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
             
             doc = Document()
             doc.add_heading('Судебная практика', 0)
-            # doc.add_paragraph("Сайт КС РФ – поиск постановлений по делам о проверке конституционности положений Трудового кодекса РФ.")
-            # doc.add_paragraph("Период поиска: от 01.09.2024 до 30.09.2024.")
             bold_paragraph = doc.add_paragraph()
             bold_run = bold_paragraph.add_run('1. Конституционный Суд РФ:')
             bold_run.bold = True
@@ -152,8 +149,6 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
             
             doc = Document()
             doc.add_heading('Судебная практика', 0)
-            # doc.add_paragraph("Сайт КС РФ – поиск постановлений по делам о проверке конституционности положений Трудового кодекса РФ.")
-            # doc.add_paragraph("Период поиска: от 01.09.2024 до 30.09.2024.")
             bold_paragraph = doc.add_paragraph()
             bold_run = bold_paragraph.add_run('Конституционный Суд РФ:')
             bold_run.bold = True
@@ -189,21 +184,3 @@ def parser1(string_to_put_in_search:str,date_from:str,date_up:str,flag:str):
     elif flag =='make_new_file':
         make_word_file(parse_KJRF(string_to_put_in_search,date_from,date_up), date_from, date_up)
 
-
-
-
-# if __name__ == "__main__":
-#     import sys
-
-#     # Проверяем количество аргументов
-#     if len(sys.argv) != 4:
-#         print("Использование: python parser1.py <string_to_put_in_search> <date_from> <date_up>")
-#         sys.exit(1)
-
-#     # Получаем параметры из командной строки
-#     search_string = sys.argv[1]
-#     date_from = sys.argv[2]
-#     date_up = sys.argv[3]
-
-#     # Вызываем функцию с полученными параметрами
-#     parser1(search_string, date_from, date_up)
